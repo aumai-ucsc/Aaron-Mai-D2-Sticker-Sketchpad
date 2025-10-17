@@ -21,16 +21,30 @@ document.body.append(document.createElement("br"));
 document.body.append(document.createElement("br"));
 document.body.appendChild(clearButton);
 
+//Undo and Redo Buttons
+const undoButton = document.createElement("button");
+undoButton.textContent = `UNDO`;
+const redoButton = document.createElement("button");
+redoButton.textContent = `REDO`;
+document.body.appendChild(undoButton);
+document.body.appendChild(redoButton);
+
 //Drawing variables
 let isDrawing = false;
 let lastX = 0;
 let lastY = 0;
 
+//Event for when a drawing changes
 const drawingChanged = new Event("redraw");
 
+//Current line the user is drawing. Will be pushed into lines array
 let currentLine: { x?: number; y?: number }[] | null = null;
 
+//Array of all lines displayed on screen
 const lines: { x?: number; y?: number }[][] = [];
+
+//Array of all lines that are undo-ed availible for redo
+const redoLines: { x?: number; y?: number }[][] = [];
 
 //Mouse Event Listeners
 //Holding mouse click down
@@ -42,6 +56,7 @@ canvas.addEventListener("mousedown", (e) => {
 
   currentLine = [];
   lines.push(currentLine);
+  redoLines.splice(0, redoLines.length); //Erases redo history for new mouse options
   currentLine.push({ x: lastX, y: lastY });
 
   canvas.dispatchEvent(drawingChanged);
@@ -94,4 +109,20 @@ canvas.addEventListener("redraw", () => {
 clearButton.addEventListener("click", () => {
   ctx?.clearRect(0, 0, canvas.width, canvas.height);
   lines.splice(0, lines.length); //Deletes elements in array from 0 to line length, which is everything in the array
+});
+
+//Undo button handler
+undoButton.addEventListener("click", () => {
+  if (lines.length > 0) {
+    redoLines.push(lines.pop()!);
+    canvas.dispatchEvent(drawingChanged);
+  }
+});
+
+//Redo button handler
+redoButton.addEventListener("click", () => {
+  if (redoLines.length > 0) {
+    lines.push(redoLines.pop()!);
+    canvas.dispatchEvent(drawingChanged);
+  }
 });
