@@ -17,12 +17,20 @@ ctx?.clearRect(0, 0, canvas.width, canvas.height);
 //Clear Button
 const clearButton = document.createElement("button");
 clearButton.textContent = `CLEAR`;
+document.body.append(document.createElement("br"));
+document.body.append(document.createElement("br"));
 document.body.appendChild(clearButton);
 
 //Drawing variables
 let isDrawing = false;
 let lastX = 0;
 let lastY = 0;
+
+const drawingChanged = new Event("redraw");
+
+let currentLine: { x?: number; y?: number }[] | null = null;
+
+const lines: { x?: number; y?: number }[][] = [];
 
 //Mouse Event Listeners
 //Holding mouse click down
@@ -31,6 +39,12 @@ canvas.addEventListener("mousedown", (e) => {
   const rect = canvas.getBoundingClientRect();
   lastX = e.clientX - rect.left;
   lastY = e.clientY - rect.top;
+
+  currentLine = [];
+  lines.push(currentLine);
+  currentLine.push({ x: lastX, y: lastY });
+
+  canvas.dispatchEvent(drawingChanged);
 });
 
 //Moving the mouse
@@ -39,26 +53,45 @@ canvas.addEventListener("mousemove", (e) => {
   const rect = canvas.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
-  //Drawing behavior
-  ctx?.beginPath();
-  ctx?.moveTo(lastX, lastY);
-  ctx?.lineTo(x, y);
-  ctx?.stroke();
-  lastX = x;
-  lastY = y;
+  currentLine?.push({ x, y });
+
+  canvas.dispatchEvent(drawingChanged);
 });
 
 //Lifting mouseclick
 canvas.addEventListener("mouseup", () => {
   isDrawing = false;
+  currentLine = null;
+  canvas.dispatchEvent(drawingChanged);
 });
 
 //Mouse leaves the canvas
 canvas.addEventListener("mouseleave", () => {
   isDrawing = false;
+  currentLine = null;
+  canvas.dispatchEvent(drawingChanged);
+});
+
+//Redrawing Event Listener/Observer
+canvas.addEventListener("redraw", () => {
+  console.log("Redraw is called");
+  ctx?.clearRect(0, 0, canvas.width, canvas.height); //Clear canvas so there is no line doubling
+
+  for (const line of lines) { //Goes over every line added to line array
+    if (line.length > 1) { //If the line is not empty
+      ctx?.beginPath(); //Start drawing paths
+      const { x, y } = line[0];
+      ctx?.moveTo(x!, y!);
+      for (const { x, y } of line) {
+        ctx?.lineTo(x!, y!);
+      }
+      ctx?.stroke();
+    }
+  }
 });
 
 //clear button handler
 clearButton.addEventListener("click", () => {
   ctx?.clearRect(0, 0, canvas.width, canvas.height);
+  lines.splice(0, lines.length); //Deletes elements in array from 0 to line length, which is everything in the array
 });
