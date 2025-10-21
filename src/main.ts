@@ -37,6 +37,28 @@ let lastY = 0;
 //Event for when a drawing changes
 const drawingChanged = new Event("redraw");
 
+//Class that holds drawing data
+class _lineCommand {
+  points: { x: number; y: number }[];
+  constructor(x: number, y: number) {
+    this.points = [{ x, y }];
+  }
+
+  execute() {
+    ctx?.beginPath();
+    const { x, y } = this.points[0];
+    ctx?.moveTo(x, y);
+    for (const { x, y } of this.points) {
+      ctx?.lineTo(x, y);
+    }
+    ctx?.stroke();
+  }
+
+  grow(x: number, y: number) {
+    this.points.push({ x, y });
+  }
+}
+
 //Current line the user is drawing. Will be pushed into lines array
 let currentLine: { x?: number; y?: number }[] | null = null;
 
