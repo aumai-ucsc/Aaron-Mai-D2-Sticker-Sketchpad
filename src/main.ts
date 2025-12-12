@@ -29,10 +29,11 @@ redoButton.textContent = `REDO`;
 document.body.appendChild(undoButton);
 document.body.appendChild(redoButton);
 
-//Drawing variables
+/*/Drawing variables
 let isDrawing = false;
 let lastX = 0;
 let lastY = 0;
+*/
 
 //Event for when a drawing changes
 const drawingChanged = new Event("redraw");
@@ -60,15 +61,16 @@ class _lineCommand {
 }
 
 //Current line the user is drawing. Will be pushed into lines array
-let currentLine: { x?: number; y?: number }[] | null = null;
+let _currentLine: _lineCommand;
 
 //Array of all lines displayed on screen
-const lines: { x?: number; y?: number }[][] = [];
+const lines: _lineCommand[] = [];
 
 //Array of all lines that are undo-ed availible for redo
-const redoLines: { x?: number; y?: number }[][] = [];
+const redoLines: _lineCommand[] = [];
 
 //Mouse Event Listeners
+/*
 //Holding mouse click down
 canvas.addEventListener("mousedown", (e) => {
   isDrawing = true;
@@ -76,21 +78,22 @@ canvas.addEventListener("mousedown", (e) => {
   lastX = e.clientX - rect.left;
   lastY = e.clientY - rect.top;
 
-  currentLine = [];
+  currentLine = new lineCommand(lastX, lastY);
   lines.push(currentLine);
   redoLines.splice(0, redoLines.length); //Erases redo history for new mouse options
-  currentLine.push({ x: lastX, y: lastY });
 
   canvas.dispatchEvent(drawingChanged);
 });
 
 //Moving the mouse
 canvas.addEventListener("mousemove", (e) => {
+
   if (!isDrawing) return;
   const rect = canvas.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
   currentLine?.push({ x, y });
+
 
   canvas.dispatchEvent(drawingChanged);
 });
@@ -98,14 +101,12 @@ canvas.addEventListener("mousemove", (e) => {
 //Lifting mouseclick
 canvas.addEventListener("mouseup", () => {
   isDrawing = false;
-  currentLine = null;
   canvas.dispatchEvent(drawingChanged);
 });
 
 //Mouse leaves the canvas
 canvas.addEventListener("mouseleave", () => {
   isDrawing = false;
-  currentLine = null;
   canvas.dispatchEvent(drawingChanged);
 });
 
@@ -114,6 +115,7 @@ canvas.addEventListener("redraw", () => {
   console.log("Redraw is called");
   ctx?.clearRect(0, 0, canvas.width, canvas.height); //Clear canvas so there is no line doubling
 
+  lines.forEach((line) => line.execute());
   for (const line of lines) { //Goes over every line added to line array
     if (line.length > 1) { //If the line is not empty
       ctx?.beginPath(); //Start drawing paths
@@ -125,7 +127,7 @@ canvas.addEventListener("redraw", () => {
       ctx?.stroke();
     }
   }
-});
+}); */
 
 //clear button handler
 clearButton.addEventListener("click", () => {
