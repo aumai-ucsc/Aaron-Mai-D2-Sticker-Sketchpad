@@ -11,6 +11,7 @@ document.body.appendChild(canvas);
 
 canvas.width = 256;
 canvas.height = 256;
+canvas.style.cursor = "none";
 const ctx = canvas.getContext("2d");
 ctx?.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -86,13 +87,26 @@ class lineCommand {
 class CursorCommand {
   x: number;
   y: number;
-  constructor(x: number, y: number) {
+  previewSize: number;
+  previewImage: string;
+  constructor(
+    x: number,
+    y: number,
+    previewSize: number = currentMarkerThickness,
+    previewImage: string = currentMarkerPreview,
+  ) {
     this.x = x;
     this.y = y;
+    this.previewSize = previewSize;
+    this.previewImage = previewImage;
   }
   execute() {
-    ctx!.font = "32px monospace";
-    ctx?.fillText("X", this.x - 8, this.y + 12);
+    ctx!.font = `${this.previewSize * 4}px monospace`;
+    ctx?.fillText(
+      `${this.previewImage}`,
+      this.x - (this.previewSize),
+      this.y + (this.previewSize),
+    );
   }
 }
 
@@ -105,8 +119,9 @@ const lines: lineCommand[] = [];
 //Array of all lines that are undo-ed availible for redo
 const redoLines: lineCommand[] = [];
 
-//Variables for marker thickness
-let currentMarkerThickness = 1;
+//Variables for marker creation, set to default of 3 matching thin marker
+let currentMarkerThickness = 3;
+let currentMarkerPreview = `*`;
 
 //Current position of cursor
 let cursorPreview: CursorCommand | null = null;
@@ -209,11 +224,13 @@ redoButton.addEventListener("click", () => {
 //Thin button handler
 thinButton.addEventListener("click", () => {
   console.log("Thin button clicked");
-  currentMarkerThickness = 1;
+  currentMarkerThickness = 3;
+  currentMarkerPreview = `*`;
 });
 
 //Thick button handler
 thickButton.addEventListener("click", () => {
   console.log("Thick button clicked");
-  currentMarkerThickness = 5;
+  currentMarkerThickness = 10;
+  currentMarkerPreview = `o`;
 });
