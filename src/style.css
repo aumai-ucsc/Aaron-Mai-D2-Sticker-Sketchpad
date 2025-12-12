@@ -1,6 +1,9 @@
 canvas {
-  background: white;
+  background: rgb(223, 223, 223);
   border: 2px solid black;
   border-radius: 30px;
   filter: drop-shadow(-10px 10px 4px #555555);
+}
+body {
+  background-color: beige;
 }
