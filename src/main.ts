@@ -158,6 +158,7 @@ class sticker {
 let currentLine: lineCommand;
 
 //Array of all lines displayed on screen. Is an array of every set of lines that are drawn
+// deno-lint-ignore no-explicit-any
 const lines: any[] = [];
 
 //Array of all lines that are undo-ed availible for redo
