@@ -123,18 +123,9 @@ class CursorCommand {
     this.previewSize = previewSize;
     this.previewImage = previewImage;
   }
-  execute() {
+  execute(ctx: CanvasRenderingContext2D) {
     ctx!.font = `${this.previewSize * 4}px monospace`;
     ctx?.fillText(
-      `${this.previewImage}`,
-      this.x - (this.previewSize),
-      this.y + (this.previewSize),
-    );
-  }
-
-  executeExport(ctxExport: CanvasRenderingContext2D) {
-    ctxExport!.font = `${this.previewSize * 4}px monospace`;
-    ctxExport?.fillText(
       `${this.previewImage}`,
       this.x - (this.previewSize),
       this.y + (this.previewSize),
@@ -281,7 +272,7 @@ canvas.addEventListener("redraw", () => {
 canvas.addEventListener("toolMoved", () => {
   canvas.dispatchEvent(drawingChanged); //Calls redraw event to have the lines first and clear the canvas
   console.log("Tool moved is called");
-  cursorPreview?.execute(); //Draws the preview on top of canvas
+  cursorPreview?.execute(ctx!); //Draws the preview on top of canvas
 });
 
 //clear button handler
