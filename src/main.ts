@@ -214,6 +214,11 @@ canvas.addEventListener("mousemove", (e) => {
   if (!isDrawing) return;
   if (!isSticker) {
     currentLine.grow(lastX, lastY);
+  } else {
+    const newSticker = new sticker(lastX, lastY);
+    newSticker.drag();
+    lines.pop();
+    lines.push(newSticker);
   }
   canvas.dispatchEvent(drawingChanged);
 });
