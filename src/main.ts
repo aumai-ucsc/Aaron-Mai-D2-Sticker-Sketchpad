@@ -30,6 +30,11 @@ redoButton.textContent = `REDO`;
 document.body.appendChild(undoButton);
 document.body.appendChild(redoButton);
 
+//Export button
+const exportButton = document.createElement("button");
+exportButton.textContent = `EXPORT`;
+document.body.appendChild(exportButton);
+
 //Thickness Buttons
 const thinButton = document.createElement("button");
 thinButton.textContent = `THIN`;
@@ -50,6 +55,12 @@ document.body.append(document.createElement("br"));
 document.body.appendChild(stickerButton1);
 document.body.appendChild(stickerButton2);
 document.body.appendChild(stickerButton3);
+
+//Custom Sticker Buttons
+const customStickerButton = document.createElement("button");
+customStickerButton.textContent = `Create Custom Sticker`;
+document.body.appendChild(customStickerButton);
+document.body.append(document.createElement("br"));
 
 //Drawing variables
 let isDrawing = false;
@@ -317,4 +328,22 @@ stickerButton3.addEventListener("click", () => {
   currentMarkerThickness = 10;
   currentMarkerPreview = `🔥`;
   isSticker = true;
+});
+
+//Custom Sticker Buttons
+customStickerButton.addEventListener("click", () => {
+  const newButton = prompt("Custom sticker text", "🧽");
+  if (newButton === null) return;
+  else {
+    //Create new clickable button
+    const newStickerButton = document.createElement("button");
+    newStickerButton.textContent = `${newButton}`;
+    document.body.appendChild(newStickerButton);
+    //Add event listener to new sticker button
+    newStickerButton.addEventListener("click", () => {
+      currentMarkerThickness = 10;
+      currentMarkerPreview = `${newButton}`;
+      isSticker = true;
+    });
+  }
 });
