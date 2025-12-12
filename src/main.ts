@@ -212,7 +212,9 @@ canvas.addEventListener("mousemove", (e) => {
 
   //Drawing if mouse is held down
   if (!isDrawing) return;
-  currentLine.grow(lastX, lastY);
+  if (!isSticker) {
+    currentLine.grow(lastX, lastY);
+  }
   canvas.dispatchEvent(drawingChanged);
 });
 
