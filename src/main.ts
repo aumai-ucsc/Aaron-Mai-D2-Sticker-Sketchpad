@@ -39,6 +39,18 @@ document.body.append(document.createElement("br"));
 document.body.appendChild(thinButton);
 document.body.appendChild(thickButton);
 
+//Sticker Buttons
+const stickerButton1 = document.createElement("button");
+stickerButton1.textContent = `😊`;
+const stickerButton2 = document.createElement("button");
+stickerButton2.textContent = `🌟`;
+const stickerButton3 = document.createElement("button");
+stickerButton3.textContent = `🔥`;
+document.body.append(document.createElement("br"));
+document.body.appendChild(stickerButton1);
+document.body.appendChild(stickerButton2);
+document.body.appendChild(stickerButton3);
+
 //Drawing variables
 let isDrawing = false;
 let lastX = 0;
@@ -110,11 +122,43 @@ class CursorCommand {
   }
 }
 
+//Class that holds sticker data
+class sticker {
+  x: number;
+  y: number;
+  image: string;
+  size: number;
+  constructor(
+    x: number,
+    y: number,
+    image: string = currentMarkerPreview,
+    size: number = currentMarkerThickness,
+  ) {
+    this.x = x;
+    this.y = y;
+    this.image = image;
+    this.size = size;
+  }
+
+  execute() {
+    ctx!.font = `${this.size * 4}px monospace`;
+    ctx?.fillText(
+      `${this.image}`,
+      this.x - (this.size),
+      this.y + (this.size),
+    );
+  }
+
+  drag() {
+    //Drag function for sticker
+  }
+}
+
 //Current line the user is drawing. Will be pushed into lines array
 let currentLine: lineCommand;
 
 //Array of all lines displayed on screen. Is an array of every set of lines that are drawn
-const lines: lineCommand[] = [];
+const lines: any[] = [];
 
 //Array of all lines that are undo-ed availible for redo
 const redoLines: lineCommand[] = [];
@@ -123,8 +167,13 @@ const redoLines: lineCommand[] = [];
 let currentMarkerThickness = 3;
 let currentMarkerPreview = `*`;
 
+//Variable to keep track of sticker or marker
+let isSticker = false;
+
 //Current position of cursor
 let cursorPreview: CursorCommand | null = null;
+
+//Sticker drag helper function
 
 //Mouse Event Listeners
 //Holding mouse click down
@@ -134,10 +183,18 @@ canvas.addEventListener("mousedown", (e) => {
   lastX = e.clientX - rect.left;
   lastY = e.clientY - rect.top;
 
-  currentLine = new lineCommand(lastX, lastY);
-  lines.push(currentLine);
-  redoLines.splice(0, redoLines.length); //Erases redo history for new mouse options
-
+  //If sticker is not selected
+  if (!isSticker) {
+    currentLine = new lineCommand(lastX, lastY);
+    lines.push(currentLine);
+    redoLines.splice(0, redoLines.length); //Erases redo history for new mouse options
+  }
+  if (isSticker) {
+    const newSticker = new sticker(lastX, lastY);
+    newSticker.drag();
+    lines.push(newSticker);
+    redoLines.splice(0, redoLines.length); //Erases redo history for new mouse options
+  }
   canvas.dispatchEvent(drawingChanged);
 });
 
@@ -226,6 +283,7 @@ thinButton.addEventListener("click", () => {
   console.log("Thin button clicked");
   currentMarkerThickness = 3;
   currentMarkerPreview = `*`;
+  isSticker = false;
 });
 
 //Thick button handler
@@ -233,4 +291,22 @@ thickButton.addEventListener("click", () => {
   console.log("Thick button clicked");
   currentMarkerThickness = 10;
   currentMarkerPreview = `o`;
+  isSticker = false;
+});
+
+//Emoji button handlers
+stickerButton1.addEventListener("click", () => {
+  currentMarkerThickness = 10;
+  currentMarkerPreview = `😊`;
+  isSticker = true;
+});
+stickerButton2.addEventListener("click", () => {
+  currentMarkerThickness = 10;
+  currentMarkerPreview = `🌟`;
+  isSticker = true;
+});
+stickerButton3.addEventListener("click", () => {
+  currentMarkerThickness = 10;
+  currentMarkerPreview = `🔥`;
+  isSticker = true;
 });
