@@ -90,7 +90,7 @@ class lineCommand {
     this.marker = new marker(currentMarkerThickness);
   }
 
-  execute() {
+  execute(ctx: CanvasRenderingContext2D) {
     ctx!.lineWidth = this.marker.thickness;
     ctx?.beginPath();
     const { x, y } = this.points[0];
@@ -103,17 +103,6 @@ class lineCommand {
 
   grow(x: number, y: number) {
     this.points.push({ x, y });
-  }
-
-  executeExport(ctxExport: CanvasRenderingContext2D) {
-    ctxExport!.lineWidth = this.marker.thickness;
-    ctxExport?.beginPath();
-    const { x, y } = this.points[0];
-    ctxExport?.moveTo(x, y);
-    for (const { x, y } of this.points) {
-      ctxExport?.lineTo(x, y);
-    }
-    ctxExport?.stroke();
   }
 }
 
@@ -285,7 +274,7 @@ canvas.addEventListener("redraw", () => {
   console.log("Redraw is called");
   ctx?.clearRect(0, 0, canvas.width, canvas.height); //Clear canvas so there is no line doubling
 
-  lines.forEach((line) => line.execute());
+  lines.forEach((line) => line.execute(ctx!)); //Draws all lines in array
 });
 
 //Mouse move Event Listener/Observer
@@ -378,7 +367,7 @@ exportButton.addEventListener("click", () => {
   ctxExport?.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
 
   ctxExport?.scale(4, 4);
-  lines.forEach((line) => line.executeExport(ctxExport!));
+  lines.forEach((line) => line.execute(ctxExport!));
 
   const downloadLink = document.createElement("a");
   downloadLink.href = tempCanvas.toDataURL("image/png");
