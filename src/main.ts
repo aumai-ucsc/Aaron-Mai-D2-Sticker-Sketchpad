@@ -46,6 +46,9 @@ let lastY = 0;
 //Event for when a drawing changes
 const drawingChanged = new Event("redraw");
 
+//Event for cursor/tool moving
+const toolMoved = new Event("toolMoved");
+
 //Class that holds line thickness data
 class marker {
   thickness: number;
@@ -79,6 +82,20 @@ class lineCommand {
   }
 }
 
+//class that hold cursor data
+class CursorCommand {
+  x: number;
+  y: number;
+  constructor(x: number, y: number) {
+    this.x = x;
+    this.y = y;
+  }
+  execute() {
+    ctx!.font = "32px monospace";
+    ctx?.fillText("X", this.x - 8, this.y + 12);
+  }
+}
+
 //Current line the user is drawing. Will be pushed into lines array
 let currentLine: lineCommand;
 
@@ -90,6 +107,9 @@ const redoLines: lineCommand[] = [];
 
 //Variables for marker thickness
 let currentMarkerThickness = 1;
+
+//Current position of cursor
+let cursorPreview: CursorCommand | null = null;
 
 //Mouse Event Listeners
 //Holding mouse click down
@@ -108,13 +128,18 @@ canvas.addEventListener("mousedown", (e) => {
 
 //Moving the mouse
 canvas.addEventListener("mousemove", (e) => {
-  if (!isDrawing) return;
-
+  //Position of cursor
   const rect = canvas.getBoundingClientRect();
   lastX = e.clientX - rect.left;
   lastY = e.clientY - rect.top;
-  currentLine.grow(lastX, lastY);
 
+  //Preview of cursor
+  cursorPreview = new CursorCommand(lastX, lastY);
+  canvas.dispatchEvent(toolMoved);
+
+  //Drawing if mouse is held down
+  if (!isDrawing) return;
+  currentLine.grow(lastX, lastY);
   canvas.dispatchEvent(drawingChanged);
 });
 
@@ -125,9 +150,23 @@ canvas.addEventListener("mouseup", () => {
 });
 
 //Mouse leaves the canvas
-canvas.addEventListener("mouseleave", () => {
+canvas.addEventListener("mouseleave", (e) => {
   isDrawing = false;
   canvas.dispatchEvent(drawingChanged);
+  const rect = canvas.getBoundingClientRect();
+  lastX = e.clientX - rect.left;
+  lastY = e.clientY - rect.top;
+  cursorPreview = new CursorCommand(lastX, lastY);
+  canvas.dispatchEvent(toolMoved);
+});
+
+//Mouse enters the canvas
+canvas.addEventListener("mouseenter", (e) => {
+  const rect = canvas.getBoundingClientRect();
+  lastX = e.clientX - rect.left;
+  lastY = e.clientY - rect.top;
+  cursorPreview = new CursorCommand(lastX, lastY);
+  canvas.dispatchEvent(toolMoved);
 });
 
 //Redrawing Event Listener/Observer
@@ -136,6 +175,13 @@ canvas.addEventListener("redraw", () => {
   ctx?.clearRect(0, 0, canvas.width, canvas.height); //Clear canvas so there is no line doubling
 
   lines.forEach((line) => line.execute());
+});
+
+//Mouse move Event Listener/Observer
+canvas.addEventListener("toolMoved", () => {
+  canvas.dispatchEvent(drawingChanged); //Calls redraw event to have the lines first and clear the canvas
+  console.log("Tool moved is called");
+  cursorPreview?.execute(); //Draws the preview on top of canvas
 });
 
 //clear button handler
