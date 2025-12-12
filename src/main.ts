@@ -2,7 +2,7 @@ import "./style.css";
 
 //Title
 const title = document.createElement("h1");
-title.textContent = "D2 - Sticker Sketchpad";
+title.textContent = 'D2 - Sticker "SREAMING, CRYING, THROWING UP" Sketchpad';
 document.body.appendChild(title);
 
 //Canvas
@@ -315,17 +315,17 @@ thickButton.addEventListener("click", () => {
 
 //Emoji button handlers
 stickerButton1.addEventListener("click", () => {
-  currentMarkerThickness = 10;
+  currentMarkerThickness = 5;
   currentMarkerPreview = `😊`;
   isSticker = true;
 });
 stickerButton2.addEventListener("click", () => {
-  currentMarkerThickness = 10;
+  currentMarkerThickness = 8;
   currentMarkerPreview = `🌟`;
   isSticker = true;
 });
 stickerButton3.addEventListener("click", () => {
-  currentMarkerThickness = 10;
+  currentMarkerThickness = 8;
   currentMarkerPreview = `🔥`;
   isSticker = true;
 });
@@ -341,7 +341,7 @@ customStickerButton.addEventListener("click", () => {
     document.body.appendChild(newStickerButton);
     //Add event listener to new sticker button
     newStickerButton.addEventListener("click", () => {
-      currentMarkerThickness = 10;
+      currentMarkerThickness = 8;
       currentMarkerPreview = `${newButton}`;
       isSticker = true;
     });
