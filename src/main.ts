@@ -44,6 +44,24 @@ document.body.append(document.createElement("br"));
 document.body.appendChild(thinButton);
 document.body.appendChild(thickButton);
 
+//Color Buttons
+const colorButtonRed = document.createElement("button");
+colorButtonRed.textContent = `RED`;
+const colorButtonBlue = document.createElement("button");
+colorButtonBlue.textContent = `BLUE`;
+const colorButtonYellow = document.createElement("button");
+colorButtonYellow.textContent = `YELLOW`;
+const colorButtonBlack = document.createElement("button");
+colorButtonBlack.textContent = `BLACK`;
+const colorButtonWhite = document.createElement("button");
+colorButtonWhite.textContent = `WHITE`;
+document.body.append(document.createElement("br"));
+document.body.appendChild(colorButtonRed);
+document.body.appendChild(colorButtonBlue);
+document.body.appendChild(colorButtonYellow);
+document.body.appendChild(colorButtonBlack);
+document.body.appendChild(colorButtonWhite);
+
 //Sticker Buttons
 const stickerButton1 = document.createElement("button");
 stickerButton1.textContent = `😊`;
@@ -76,8 +94,10 @@ const toolMoved = new Event("toolMoved");
 //Class that holds line thickness data
 class marker {
   thickness: number;
-  constructor(thickness: number) {
+  color: string;
+  constructor(thickness: number, color: string) {
     this.thickness = thickness;
+    this.color = color;
   }
 }
 
@@ -87,11 +107,12 @@ class lineCommand {
   marker: marker;
   constructor(x: number, y: number) {
     this.points = [{ x, y }];
-    this.marker = new marker(currentMarkerThickness);
+    this.marker = new marker(currentMarkerThickness, playerMarkerColor);
   }
 
   execute(ctx: CanvasRenderingContext2D) {
     ctx!.lineWidth = this.marker.thickness;
+    ctx!.strokeStyle = this.marker.color;
     ctx?.beginPath();
     const { x, y } = this.points[0];
     ctx?.moveTo(x, y);
@@ -178,6 +199,8 @@ const redoLines: lineCommand[] = [];
 //Variables for marker creation, set to default of 3 matching thin marker
 let currentMarkerThickness = 3;
 let currentMarkerPreview = `*`;
+
+let playerMarkerColor = `black`;
 
 //Variable to keep track of sticker or marker
 let isSticker = false;
@@ -311,6 +334,23 @@ thickButton.addEventListener("click", () => {
   currentMarkerThickness = 10;
   currentMarkerPreview = `o`;
   isSticker = false;
+});
+
+//Color button handlers
+colorButtonRed.addEventListener("click", () => {
+  playerMarkerColor = `red`;
+});
+colorButtonBlue.addEventListener("click", () => {
+  playerMarkerColor = `blue`;
+});
+colorButtonYellow.addEventListener("click", () => {
+  playerMarkerColor = `yellow`;
+});
+colorButtonBlack.addEventListener("click", () => {
+  playerMarkerColor = `black`;
+});
+colorButtonWhite.addEventListener("click", () => {
+  playerMarkerColor = `white`;
 });
 
 //Emoji button handlers
