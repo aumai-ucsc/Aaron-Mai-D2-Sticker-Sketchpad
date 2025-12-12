@@ -104,6 +104,17 @@ class lineCommand {
   grow(x: number, y: number) {
     this.points.push({ x, y });
   }
+
+  executeExport(ctxExport: CanvasRenderingContext2D) {
+    ctxExport!.lineWidth = this.marker.thickness;
+    ctxExport?.beginPath();
+    const { x, y } = this.points[0];
+    ctxExport?.moveTo(x, y);
+    for (const { x, y } of this.points) {
+      ctxExport?.lineTo(x, y);
+    }
+    ctxExport?.stroke();
+  }
 }
 
 //class that hold cursor data
@@ -126,6 +137,15 @@ class CursorCommand {
   execute() {
     ctx!.font = `${this.previewSize * 4}px monospace`;
     ctx?.fillText(
+      `${this.previewImage}`,
+      this.x - (this.previewSize),
+      this.y + (this.previewSize),
+    );
+  }
+
+  executeExport(ctxExport: CanvasRenderingContext2D) {
+    ctxExport!.font = `${this.previewSize * 4}px monospace`;
+    ctxExport?.fillText(
       `${this.previewImage}`,
       this.x - (this.previewSize),
       this.y + (this.previewSize),
@@ -346,4 +366,22 @@ customStickerButton.addEventListener("click", () => {
       isSticker = true;
     });
   }
+});
+
+//Export button handler
+exportButton.addEventListener("click", () => {
+  const tempCanvas = document.createElement("canvas");
+  tempCanvas.width = 1024;
+  tempCanvas.height = 1024;
+  canvas.style.cursor = "none";
+  const ctxExport = tempCanvas.getContext("2d");
+  ctxExport?.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+  ctxExport?.scale(4, 4);
+  lines.forEach((line) => line.executeExport(ctxExport!));
+
+  const downloadLink = document.createElement("a");
+  downloadLink.href = tempCanvas.toDataURL("image/png");
+  downloadLink.download = "sketchpad.png";
+  downloadLink.click();
 });
