@@ -29,6 +29,15 @@ redoButton.textContent = `REDO`;
 document.body.appendChild(undoButton);
 document.body.appendChild(redoButton);
 
+//Thickness Buttons
+const thinButton = document.createElement("button");
+thinButton.textContent = `THIN`;
+const thickButton = document.createElement("button");
+thickButton.textContent = `THICK`;
+document.body.append(document.createElement("br"));
+document.body.appendChild(thinButton);
+document.body.appendChild(thickButton);
+
 //Drawing variables
 let isDrawing = false;
 let lastX = 0;
@@ -91,7 +100,6 @@ canvas.addEventListener("mousemove", (e) => {
   lastX = e.clientX - rect.left;
   lastY = e.clientY - rect.top;
   currentLine.grow(lastX, lastY);
-  console.log(`lastX: ${lastX}, lastY: ${lastY}`);
 
   canvas.dispatchEvent(drawingChanged);
 });
@@ -136,4 +144,14 @@ redoButton.addEventListener("click", () => {
     lines.push(redoLines.pop()!);
     canvas.dispatchEvent(drawingChanged);
   }
+});
+
+//Thin button handler
+thinButton.addEventListener("click", () => {
+  console.log("Thin button clicked");
+});
+
+//Thick button handler
+thickButton.addEventListener("click", () => {
+  console.log("Thick button clicked");
 });
