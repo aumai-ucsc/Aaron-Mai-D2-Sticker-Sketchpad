@@ -46,14 +46,25 @@ let lastY = 0;
 //Event for when a drawing changes
 const drawingChanged = new Event("redraw");
 
+//Class that holds line thickness data
+class marker {
+  thickness: number;
+  constructor(thickness: number) {
+    this.thickness = thickness;
+  }
+}
+
 //Class that holds drawing data
 class lineCommand {
   points: [{ x: number; y: number }];
+  marker: marker;
   constructor(x: number, y: number) {
     this.points = [{ x, y }];
+    this.marker = new marker(currentMarkerThickness);
   }
 
   execute() {
+    ctx!.lineWidth = this.marker.thickness;
     ctx?.beginPath();
     const { x, y } = this.points[0];
     ctx?.moveTo(x, y);
@@ -76,6 +87,9 @@ const lines: lineCommand[] = [];
 
 //Array of all lines that are undo-ed availible for redo
 const redoLines: lineCommand[] = [];
+
+//Variables for marker thickness
+let currentMarkerThickness = 1;
 
 //Mouse Event Listeners
 //Holding mouse click down
@@ -149,9 +163,11 @@ redoButton.addEventListener("click", () => {
 //Thin button handler
 thinButton.addEventListener("click", () => {
   console.log("Thin button clicked");
+  currentMarkerThickness = 1;
 });
 
 //Thick button handler
 thickButton.addEventListener("click", () => {
   console.log("Thick button clicked");
+  currentMarkerThickness = 5;
 });
